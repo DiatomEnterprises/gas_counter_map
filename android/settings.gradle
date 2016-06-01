@@ -1,0 +1,3 @@
+rootProject.name = 'gas_counter_map'
+
+include ':app'
