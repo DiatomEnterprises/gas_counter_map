@@ -1,8 +1,10 @@
 package com.gas_counter_map;
 
 import com.facebook.react.ReactActivity;
+import com.AirMaps.AirPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.airbnb.android.react.maps.MapsPackage;//  <-- add this
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +36,9 @@ public class MainActivity extends ReactActivity {
     @Override
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
-            new MainReactPackage()
+            new MainReactPackage(),
+            new AirPackage(),
+            new MapsPackage()
         );
     }
 }
