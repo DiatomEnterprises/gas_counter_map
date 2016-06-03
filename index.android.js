@@ -13,6 +13,8 @@ import {
   Text,
   TextInput,
   ProgressBarAndroid,
+  TouchableHighlight,
+  Image,
   View
 } from 'react-native';
 
@@ -29,6 +31,7 @@ class gas_counter_map extends Component {
       spentMoney: 0,
       filledLiters:0,
       droveMilliage: 0,
+      gotCoords: 'unknown',
     };
   }
 
@@ -40,8 +43,11 @@ class gas_counter_map extends Component {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         // var initialPosition = position;
-        this.setState({initialLongitude: position.coords.longitude});
-        this.setState({initialLatitude: position.coords.latitude});
+        //{timestep:123124, coords: {longitude: 124, latitude: 124}}
+        let {longitude, latitude} = position.coords;
+        this.setState({gotCoords: position.coords});
+        this.setState({initialLongitude: longitude});
+        this.setState({initialLatitude: latitude});
         this.setState({gotGpsData: true});
       },
       (error) => alert(error),
@@ -116,11 +122,22 @@ class gas_counter_map extends Component {
         <Text style={styles.instructions}>
           {this.state.initialLatitude}
         </Text>
+        <TouchableHighlight onPress={this._onPressButton}>
+          <Image
+            style={styles.button}
+            source={require('image!myButton')}
+          />
+        </TouchableHighlight>
       </View>
     );
   }
 }
 
+_submitForm = () => {
+    const { username, password } = this.state
+
+    // do some stuff here…
+  };
 const styles = StyleSheet.create({
   map: {
     height: 150,
