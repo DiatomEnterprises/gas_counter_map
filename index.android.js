@@ -11,6 +11,7 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  TextInput,
   ProgressBarAndroid,
   View
 } from 'react-native';
@@ -25,6 +26,9 @@ class gas_counter_map extends Component {
       lastPosition: 'unknown',
       gotGpsData: false,
       watchID: 'unknown',
+      spentMoney: 0,
+      filledLiters:0,
+      droveMilliage: 0,
     };
   }
 
@@ -43,11 +47,15 @@ class gas_counter_map extends Component {
       (error) => alert(error),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
-    navigator.geolocation.getCurrentPosition(
+    navigator.geolocation.watchPosition(
       (position) => {
         var lastPosition = JSON.stringify(position);
-        this.setState({lastPosition});
-      }
+        this.setState({initialLongitude: position.coords.longitude});
+        this.setState({initialLatitude: position.coords.latitude});
+        this.setState({gotGpsData: true});
+        this.render();
+      },
+      (error) => {}
     );
   }
 
@@ -71,13 +79,39 @@ class gas_counter_map extends Component {
       <View style={styles.container}>
         <MapView
           style={styles.map}
-
           initialRegion={{
-            longitude: this.state.initialLongitude,//this.state.initialPosition.longitude,
-            latitude: this.state.initialLatitude,//this.state.initialPosition.latitude,
+            longitude: this.state.initialLongitude,
+            latitude: this.state.initialLatitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
+        />
+        <Text style={styles.instructions}>
+          Spent money
+        </Text>
+        <TextInput
+          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+          onChangeText={(spentMoney) => this.setState({spentMoney})}
+          value={this.state.text}
+          keyboardType={'numeric'}
+        />
+        <Text style={styles.instructions}>
+          Filled-in liters
+        </Text>
+        <TextInput
+          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+          onChangeText={(filledLiters) => this.setState({filledLiters})}
+          value={this.state.text}
+          keyboardType={'numeric'}
+        />
+        <Text style={styles.instructions}>
+          Milliage from the last point
+        </Text>
+        <TextInput
+          style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+          onChangeText={(droveMilliage) => this.setState({droveMilliage})}
+          value={this.state.text}
+          keyboardType={'numeric'}
         />
         <Text style={styles.instructions}>
           {this.state.initialLatitude}
