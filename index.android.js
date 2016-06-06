@@ -1,11 +1,12 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
+*
+**/
 
 import React, { Component } from 'react';
 
 import MapView from 'react-native-maps';
+
+import PriceMarker from './PriceMarker';
 
 import {
   AppRegistry,
@@ -23,31 +24,19 @@ class gas_counter_map extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      initialLongitude: 'unknown',
-      initialLatitude: 'unknown',
-      lastPosition: 'unknown',
       gotGpsData: false,
       watchID: 'unknown',
       spentMoney: 0,
       filledLiters:0,
       droveMilliage: 0,
-      gotCoords: 'unknown',
+      initialCoords: 'unknown',
     };
   }
-
-  // componentDidMount() {
-  //
-  // }
 
   getGpsData(){
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // var initialPosition = position;
-        //{timestep:123124, coords: {longitude: 124, latitude: 124}}
-        let {longitude, latitude} = position.coords;
-        this.setState({gotCoords: position.coords});
-        this.setState({initialLongitude: longitude});
-        this.setState({initialLatitude: latitude});
+        this.setState({initialCoords: position.coords});
         this.setState({gotGpsData: true});
       },
       (error) => alert(error),
@@ -56,8 +45,7 @@ class gas_counter_map extends Component {
     navigator.geolocation.watchPosition(
       (position) => {
         var lastPosition = JSON.stringify(position);
-        this.setState({initialLongitude: position.coords.longitude});
-        this.setState({initialLatitude: position.coords.latitude});
+        this.setState({initialCoords: position.coords});
         this.setState({gotGpsData: true});
         this.render();
       },
@@ -85,13 +73,25 @@ class gas_counter_map extends Component {
       <View style={styles.container}>
         <MapView
           style={styles.map}
-          initialRegion={{
-            longitude: this.state.initialLongitude,
-            latitude: this.state.initialLatitude,
+          region={{
+            longitude: this.state.initialCoords.longitude,
+            latitude: this.state.initialCoords.latitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
-        />
+        >
+          <MapView.Marker
+           coordinate={this.state.initialCoords}
+           onSelect={(e) => console.log('onSelect', e)}
+           onDrag={(e) => console.log('onDrag', e)}
+           onDragStart={(e) => console.log('onDragStart', e)}
+           onDragEnd={(e) => console.log('onDragEnd', e)}
+           onPress={(e) => console.log('onPress', e)}
+           draggable
+         >
+           <PriceMarker amount={this.state.spentMoney} />
+         </MapView.Marker>
+        </MapView>
         <Text style={styles.instructions}>
           Spent money
         </Text>
@@ -120,14 +120,8 @@ class gas_counter_map extends Component {
           keyboardType={'numeric'}
         />
         <Text style={styles.instructions}>
-          {this.state.initialLatitude}
+          {this.state.initialCoords.latitude}
         </Text>
-        <TouchableHighlight onPress={this._onPressButton}>
-          <Image
-            style={styles.button}
-            source={require('image!myButton')}
-          />
-        </TouchableHighlight>
       </View>
     );
   }
