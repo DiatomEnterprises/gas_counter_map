@@ -8,6 +8,8 @@ import MapView from 'react-native-maps';
 
 import PriceMarker from './PriceMarker';
 
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 import {
   AppRegistry,
   StyleSheet,
@@ -53,6 +55,10 @@ class gas_counter_map extends Component {
     );
   }
 
+  submitForm() {
+      //
+  }
+
   renderLoadingView(){
     return (
       <View style={styles.container}>
@@ -82,11 +88,11 @@ class gas_counter_map extends Component {
         >
           <MapView.Marker
            coordinate={this.state.initialCoords}
-           onSelect={(e) => console.log('onSelect', e)}
-           onDrag={(e) => console.log('onDrag', e)}
-           onDragStart={(e) => console.log('onDragStart', e)}
-           onDragEnd={(e) => console.log('onDragEnd', e)}
-           onPress={(e) => console.log('onPress', e)}
+          //  onSelect={(e) => console.log('onSelect', e)}
+          //  onDrag={(e) => console.log('onDrag', e)}
+          //  onDragStart={(e) => console.log('onDragStart', e)}
+          //  onDragEnd={(e) => console.log('onDragEnd', e)}
+          //  onPress={(e) => console.log('onPress', e)}
            draggable
          >
            <PriceMarker amount={this.state.spentMoney} />
@@ -119,6 +125,9 @@ class gas_counter_map extends Component {
           value={this.state.text}
           keyboardType={'numeric'}
         />
+        <Icon.Button name="pencil" backgroundColor="#FF5A5F" onPress={this.submitForm()}>
+          Save spent
+        </Icon.Button>
         <Text style={styles.instructions}>
           {this.state.initialCoords.latitude}
         </Text>
@@ -127,11 +136,6 @@ class gas_counter_map extends Component {
   }
 }
 
-_submitForm = () => {
-    const { username, password } = this.state
-
-    // do some stuff here…
-  };
 const styles = StyleSheet.create({
   map: {
     height: 150,
