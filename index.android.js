@@ -12,12 +12,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import {
   AppRegistry,
+  AsyncStorage,
+  Image,
+  ProgressBarAndroid,
   StyleSheet,
   Text,
   TextInput,
-  ProgressBarAndroid,
   TouchableHighlight,
-  Image,
   View
 } from 'react-native';
 
@@ -27,15 +28,40 @@ class gas_counter_map extends Component {
     super(props);
     this.state = {
       gotGpsData: false,
-      watchID: 'unknown',
+      message: '',
       spentMoney: 0,
-      filledLiters:0,
+      filledLiters: 0,
       droveMilliage: 0,
       initialCoords: 'unknown',
     };
   }
 
-  getGpsData(){
+  saveData() {
+    var saveData = {
+      "longitude": this.state.initialCoords.longitude,
+      "latitude": this.state.initialCoords.latitude,
+      "spentMoney": this.state.spentMoney,
+      "filledLiters": this.state.filledLiters,
+      "droveMilliage": this.state.filledLiters,
+    };
+    AsyncStorage.setItem("index", JSON.stringify(saveData)).then(
+      this.setState({message: "Saved"})
+    ).done();
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (err, stores) => {
+       stores.map((result, i, store) => {
+         // get at each store's key/value so you can work with it
+         let key = store[i][0];
+         let value = store[i][1];
+         console.log(key);
+         console.log(value);
+        });
+      });
+    });
+    debugger;
+  }
+
+  getGpsData() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         this.setState({initialCoords: position.coords});
@@ -53,10 +79,6 @@ class gas_counter_map extends Component {
       },
       (error) => {}
     );
-  }
-
-  submitForm() {
-      //
   }
 
   renderLoadingView(){
@@ -88,11 +110,6 @@ class gas_counter_map extends Component {
         >
           <MapView.Marker
            coordinate={this.state.initialCoords}
-          //  onSelect={(e) => console.log('onSelect', e)}
-          //  onDrag={(e) => console.log('onDrag', e)}
-          //  onDragStart={(e) => console.log('onDragStart', e)}
-          //  onDragEnd={(e) => console.log('onDragEnd', e)}
-          //  onPress={(e) => console.log('onPress', e)}
            draggable
          >
            <PriceMarker amount={this.state.spentMoney} />
@@ -125,11 +142,14 @@ class gas_counter_map extends Component {
           value={this.state.text}
           keyboardType={'numeric'}
         />
-        <Icon.Button name="pencil" backgroundColor="#FF5A5F" onPress={this.submitForm()}>
-          Save spent
-        </Icon.Button>
+        <TouchableHighlight
+          activeOpacity={0.6}
+          underlayColor={'white'}
+          onPress={() => this.saveData()}>
+          <Text style={styles.button}>Tap</Text>
+        </TouchableHighlight>
         <Text style={styles.instructions}>
-          {this.state.initialCoords.latitude}
+          {this.state.message}
         </Text>
       </View>
     );
