@@ -48,7 +48,7 @@ class gas_counter_map extends Component {
   }
 
   clearTextInputs(){
-    this.setState({text: ''});
+    //
   }
 
   saveData() {
@@ -111,8 +111,8 @@ class gas_counter_map extends Component {
           region={{
             longitude: this.state.initialCoords.longitude,
             latitude: this.state.initialCoords.latitude,
-            latitudeDelta: 0.5,
-            longitudeDelta: 0.4,
+            latitudeDelta: 10,
+            longitudeDelta: 10,
           }}
         >
           <MapView.Marker
