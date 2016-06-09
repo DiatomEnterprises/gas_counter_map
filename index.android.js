@@ -27,11 +27,11 @@ class gas_counter_map extends Component {
     AsyncStorage.getAllKeys((err, keys) => {
       AsyncStorage.multiGet(keys, (err, stores) => {
         this.setState({record_count: stores.length});
-        last_store = stores[stores.length-1][1];
-        this.setState({last_record: JSON.parse(last_store)});
+        this.setState({last_records: stores});
       });
     });
   }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -42,9 +42,13 @@ class gas_counter_map extends Component {
       droveMilliage: 0,
       initialCoords: 'unknown',
       record_count: 0,
-      last_record: [],
+      last_records: [],
     };
     this.sync_storage();
+  }
+
+  clearTextInputs(){
+    this.setState({text: ''});
   }
 
   saveData() {
@@ -56,9 +60,11 @@ class gas_counter_map extends Component {
       "droveMilliage": this.state.filledLiters,
       "timestamp": Math.round(new Date().getTime() / 1000),
     };
-    AsyncStorage.setItem("record_"+this.state.record_count-1, JSON.stringify(saveData)).then(
-      this.setState({message: "Saved record #"+this.state.record_count})
-    ).done(this.render());
+    AsyncStorage.setItem("record_"+this.state.record_count+1, JSON.stringify(saveData)).then(
+      this.setState({message: "Saved record #"+this.state.record_count+1})
+    ).then(this.clearTextInputs()).then(this.sync_storage()).done(
+      this.render()
+    );
   }
 
 
@@ -105,16 +111,31 @@ class gas_counter_map extends Component {
           region={{
             longitude: this.state.initialCoords.longitude,
             latitude: this.state.initialCoords.latitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.5,
+            longitudeDelta: 0.4,
           }}
         >
           <MapView.Marker
            coordinate={this.state.initialCoords}
            draggable
-         >
-           <PriceMarker amount={this.state.spentMoney} />
-         </MapView.Marker>
+          >
+            <PriceMarker amount={this.state.spentMoney} />
+          </MapView.Marker>
+         {
+           this.state.last_records.map(function(item, index){
+
+             item = JSON.parse(item[1])
+             coords = { latitude: item.latitude, longitude: item.longitude }
+             return (
+               <MapView.Marker
+                coordinate = { coords }
+                draggable
+               >
+                 <PriceMarker amount={item.spentMoney} />
+               </MapView.Marker>
+             )
+           }.bind(this))
+         }
         </MapView>
         <Text style={styles.instructions}>
           Spent money
