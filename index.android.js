@@ -23,7 +23,15 @@ import {
 } from 'react-native';
 
 class gas_counter_map extends Component {
-
+  sync_storage() {
+    AsyncStorage.getAllKeys((err, keys) => {
+      AsyncStorage.multiGet(keys, (err, stores) => {
+        this.setState({record_count: stores.length});
+        last_store = stores[stores.length-1][1];
+        this.setState({last_record: JSON.parse(last_store)});
+      });
+    });
+  }
   constructor(props) {
     super(props);
     this.state = {
@@ -33,7 +41,10 @@ class gas_counter_map extends Component {
       filledLiters: 0,
       droveMilliage: 0,
       initialCoords: 'unknown',
+      record_count: 0,
+      last_record: [],
     };
+    this.sync_storage();
   }
 
   saveData() {
@@ -43,23 +54,13 @@ class gas_counter_map extends Component {
       "spentMoney": this.state.spentMoney,
       "filledLiters": this.state.filledLiters,
       "droveMilliage": this.state.filledLiters,
+      "timestamp": Math.round(new Date().getTime() / 1000),
     };
-    AsyncStorage.setItem("index", JSON.stringify(saveData)).then(
-      this.setState({message: "Saved"})
-    ).done();
-    AsyncStorage.getAllKeys((err, keys) => {
-      AsyncStorage.multiGet(keys, (err, stores) => {
-       stores.map((result, i, store) => {
-         // get at each store's key/value so you can work with it
-         let key = store[i][0];
-         let value = store[i][1];
-         console.log(key);
-         console.log(value);
-        });
-      });
-    });
-    debugger;
+    AsyncStorage.setItem("record_"+this.state.record_count-1, JSON.stringify(saveData)).then(
+      this.setState({message: "Saved record #"+this.state.record_count})
+    ).done(this.render());
   }
+
 
   getGpsData() {
     navigator.geolocation.getCurrentPosition(
@@ -146,10 +147,13 @@ class gas_counter_map extends Component {
           activeOpacity={0.6}
           underlayColor={'white'}
           onPress={() => this.saveData()}>
-          <Text style={styles.button}>Tap</Text>
+          <Text style={styles.button}>Save</Text>
         </TouchableHighlight>
         <Text style={styles.instructions}>
           {this.state.message}
+        </Text>
+        <Text style={styles.instructions}>
+          Your fuel consumption on this {this.state.droveMilliage} km is {Math.round(this.state.filledLiters * 100 / this.state.droveMilliage *100)/100} l/100km
         </Text>
       </View>
     );
