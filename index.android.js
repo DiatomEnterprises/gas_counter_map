@@ -8,8 +8,6 @@ import MapView from 'react-native-maps';
 
 import PriceMarker from './PriceMarker';
 
-import Icon from 'react-native-vector-icons/FontAwesome';
-
 import {
   AppRegistry,
   AsyncStorage,
@@ -23,11 +21,11 @@ import {
 } from 'react-native';
 
 class gas_counter_map extends Component {
-  sync_storage() {
+  syncStorage() {
     AsyncStorage.getAllKeys((err, keys) => {
       AsyncStorage.multiGet(keys, (err, stores) => {
-        this.setState({record_count: stores.length});
-        this.setState({last_records: stores});
+        this.setState({recordCount: stores.length});
+        this.setState({lastRecords: stores});
       });
     });
   }
@@ -41,10 +39,10 @@ class gas_counter_map extends Component {
       filledLiters: 0,
       droveMilliage: 0,
       initialCoords: 'unknown',
-      record_count: 0,
-      last_records: [],
+      recordCount: 0,
+      lastRecords: [],
     };
-    this.sync_storage();
+    this.syncStorage();
   }
 
   clearTextInputs(){
@@ -60,9 +58,9 @@ class gas_counter_map extends Component {
       "droveMilliage": this.state.filledLiters,
       "timestamp": Math.round(new Date().getTime() / 1000),
     };
-    AsyncStorage.setItem("record_"+this.state.record_count+1, JSON.stringify(saveData)).then(
-      this.setState({message: "Saved record #"+this.state.record_count+1})
-    ).then(this.clearTextInputs()).then(this.sync_storage()).done(
+    AsyncStorage.setItem("record_"+this.state.recordCount+1, JSON.stringify(saveData)).then(
+      this.setState({message: "Saved record #"+this.state.recordCount+1})
+    ).then(this.clearTextInputs()).then(this.syncStorage()).done(
       this.render()
     );
   }
@@ -122,7 +120,7 @@ class gas_counter_map extends Component {
             <PriceMarker amount={this.state.spentMoney} />
           </MapView.Marker>
          {
-           this.state.last_records.map(function(item, index){
+           this.state.lastRecords.map(function(item, index){
 
              item = JSON.parse(item[1])
              coords = { latitude: item.latitude, longitude: item.longitude }

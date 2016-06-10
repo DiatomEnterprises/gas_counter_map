@@ -1,7 +1,6 @@
 package com.gas_counter_map;
 
 import com.facebook.react.ReactActivity;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.AirMaps.AirPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -38,7 +37,6 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
-            new VectorIconsPackage(),
             new AirPackage(),
             new MapsPackage()
         );
